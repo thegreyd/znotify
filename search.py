@@ -7,9 +7,9 @@ from bs4 import BeautifulSoup
 from torrent import Torrent, TorrentzEngine
 from parser import MyParser
 
-headers={"Name":0,"Age":1,"Size":2,"Seeders":3,"Peers":4,"Category":5,"Download":6,"Description":7}
+headers={"Name":0,"Age":1,"Date":2,"Size":3,"Seeders":4,"Peers":5,"Category":6,"Download":7,"Description":8}
 
-header_data=("Name","Age","Size","Seeders","Peers","Category","Download","Description")
+header_data=("Name","Age","Date","Size","Seeders","Peers","Category","Download","Description")
 
 
 
