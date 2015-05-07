@@ -1,7 +1,7 @@
 import urllib.parse
 
 class Torrent():
-    def __init__(self,thash,title,pub_Date,categ,size,seeds,peers):
+    def __init__(self,thash,title,age,pub_Date,categ,size,seeds,peers):
         self.thash = thash
         self.title = title
         self.pub_Date = pub_Date
@@ -9,6 +9,7 @@ class Torrent():
         self.size = size
         self.seeds = seeds
         self.peers = int(peers) + int(seeds)
+        self.age = age
         self.desc_Link = TorrentzEngine.Desc_Link(thash)
         self.mag_Link = TorrentzEngine.Magnet_Link(thash, title)
 
