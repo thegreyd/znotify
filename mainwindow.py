@@ -60,6 +60,7 @@ class MyWindowClass(QMainWindow, form_class):
             search_Obj = search.TorrentzSearch()
             results = search_Obj.search_now(query_Obj)
             self.showResults(results)
+            self.resultsBrowser.scrollToTop()
         else:
             pass
     
@@ -70,7 +71,8 @@ class MyWindowClass(QMainWindow, form_class):
                 self.SearchListModel.insertRow(row)
                 
                 self.SearchListModel.setData(self.SearchListModel.index(row, search.headers["Name"]), tor_Obj.title)
-                self.SearchListModel.setData(self.SearchListModel.index(row, search.headers["Age"]), tor_Obj.pub_Date)
+                self.SearchListModel.setData(self.SearchListModel.index(row, search.headers["Age"]), tor_Obj.age)
+                self.SearchListModel.setData(self.SearchListModel.index(row, search.headers["Date"]), tor_Obj.pub_Date)
                 self.SearchListModel.setData(self.SearchListModel.index(row, search.headers["Size"]), tor_Obj.size)
                 self.SearchListModel.setData(self.SearchListModel.index(row, search.headers["Seeders"]), tor_Obj.seeds)
                 self.SearchListModel.setData(self.SearchListModel.index(row, search.headers["Peers"]), tor_Obj.peers)
@@ -78,7 +80,7 @@ class MyWindowClass(QMainWindow, form_class):
                 self.SearchListModel.setData(self.SearchListModel.index(row, search.headers["Download"]), tor_Obj.mag_Link)
                 self.SearchListModel.setData(self.SearchListModel.index(row, search.headers["Description"]), tor_Obj.desc_Link)
                 
-            self.resultsBrowser.sortByColumn(search.headers["Seeders"], Qt.DescendingOrder)
+            self.resultsBrowser.sortByColumn(search.headers["Peers"], Qt.DescendingOrder)
             self.btn_description.setEnabled(True)
             self.btn_download.setEnabled(True)
             self.btn_download.clicked.connect(self.download)
