@@ -5,6 +5,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.uic import *
+from query import Query
 import search
 from subprocess import call
 
@@ -35,37 +36,45 @@ class MyWindowClass(QMainWindow, form_class):
         #self.resultsBrowser.hideColumn(search.headers["Category"])
 
         self.combo_searchcateg.addItems(search.categories)
-        self.btn_search.clicked.connect(self.init_search)
-        self.search_bar.returnPressed.connect(self.init_search)
+        self.btn_search.clicked.connect(self.init_Search)
+        self.search_bar.returnPressed.connect(self.init_Search)
         self.search_bar.setFocus()
         
 
-
+    def reset_List(self):
+        row = self.SearchListModel.rowCount()
+        if row > 0:
+            self.SearchListModel.removeRows(0, row)
         
-    def init_search(self):
-        query=self.search_bar.text()
-        category=self.combo_searchcateg.currentText()
-        #print(category)
-        if query :
+    def init_Search(self):
+        search_Text = self.search_bar.text()
+
+        if search_Text :
             self.status_label.setText("Status: Searching... ")
             
-            row = self.SearchListModel.rowCount()
-            if row > 0:
-                self.SearchListModel.removeRows(0, row)
+            category = self.combo_searchcateg.currentText()
+            query_Obj = Query(search_Text, category)
             
-            search_Obj = search.torrentz_Search()
-            results = search_Obj.search_now(query,category)
+            self.reset_List()
+
+            search_Obj = search.TorrentzSearch()
+            results = search_Obj.search_now(query_Obj)
             self.showResults(results)
         else:
             pass
     
     def showResults(self,list_of_results):
         if list_of_results :
-            for parts in list_of_results:
+            for tor_Obj in list_of_results:
                 row=self.SearchListModel.rowCount()
                 self.SearchListModel.insertRow(row)
-                for i in range(len(search.header_data)):
-                    self.SearchListModel.setData(self.SearchListModel.index(row, i), parts[i])
+                
+                self.SearchListModel.setData(self.SearchListModel.index(row, search.headers["Name"]), tor_Obj.title)
+                self.SearchListModel.setData(self.SearchListModel.index(row, search.headers["Age"]), tor_Obj.pub_Date)
+                self.SearchListModel.setData(self.SearchListModel.index(row, search.headers["Size"]), tor_Obj.size)
+                self.SearchListModel.setData(self.SearchListModel.index(row, search.headers["Seeders"]), tor_Obj.seeds)
+                self.SearchListModel.setData(self.SearchListModel.index(row, search.headers["Peers"]), tor_Obj.peers)
+                self.SearchListModel.setData(self.SearchListModel.index(row, search.headers["Category"]), tor_Obj.categ)
                 
             self.resultsBrowser.sortByColumn(search.headers["Seeders"], Qt.DescendingOrder)
             self.btn_description.setEnabled(True)
