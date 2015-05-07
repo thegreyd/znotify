@@ -75,6 +75,8 @@ class MyWindowClass(QMainWindow, form_class):
                 self.SearchListModel.setData(self.SearchListModel.index(row, search.headers["Seeders"]), tor_Obj.seeds)
                 self.SearchListModel.setData(self.SearchListModel.index(row, search.headers["Peers"]), tor_Obj.peers)
                 self.SearchListModel.setData(self.SearchListModel.index(row, search.headers["Category"]), tor_Obj.categ)
+                self.SearchListModel.setData(self.SearchListModel.index(row, search.headers["Download"]), tor_Obj.mag_Link)
+                self.SearchListModel.setData(self.SearchListModel.index(row, search.headers["Description"]), tor_Obj.desc_Link)
                 
             self.resultsBrowser.sortByColumn(search.headers["Seeders"], Qt.DescendingOrder)
             self.btn_description.setEnabled(True)
@@ -91,7 +93,9 @@ class MyWindowClass(QMainWindow, form_class):
         indexes=self.resultsBrowser.selectedIndexes()
         for i in indexes:
             if(i.column() == search.headers["Name"]):
+                print(i.row(),search.headers["Download"])
                 link = self.proxyModel.data(self.proxyModel.index(i.row(), search.headers["Download"]))
+                #print(link)
                 call(["xdg-open",link])
     
     def open_desc(self):
