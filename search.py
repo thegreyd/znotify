@@ -7,9 +7,9 @@ from bs4 import BeautifulSoup
 from torrent import Torrent, TorrentzEngine
 from parser import MyParser
 
-headers={"Name":0,"Age":1,"Date":2,"Size":3,"Seeders":4,"Peers":5,"Category":6,"Download":7,"Description":8}
+headers={"name":0,"age":1,"date":2,"size":3,"size_Mb":4,"seeds":5,"peers":6,"categ":7,"hash":8}
 
-header_data=("Name","Age","Date","Size","Seeders","Peers","Category","Download","Description")
+header_data=("Name","Age","Date","Size","SizeMB","Seeders","Peers","Category","Hash")
 
 
 
@@ -22,7 +22,8 @@ categories_keywords = { "Anime" : ("anime"),
                         "Games" : ("game"),
                         "Movies" : ("movie",),
                         "Music" : ("music","audio"),
-                        "TV" : ("tv","show")
+                        "TV" : ("tv","show"),
+                        "Adult" : ("xxx","porn")
                     }
 
 
@@ -59,7 +60,7 @@ class TorrentzSearch():
             #filtered_results = self.filter_categories(parsed_results,categ)
             full_results.extend(filtered_results)
             
-        return full_results
+        return tuple(full_results)
 
     def filter_categories(self,results,categ):
         if categ == "Any" : 

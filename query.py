@@ -13,3 +13,7 @@ class Query():
         self.date_Lower_Limit_unit =date_Lower_Limit_unit
 
         self.family_Filter_Enable = family_Filter_Enable
+
+class Filter(Query):
+    def __init__():
+        pass      

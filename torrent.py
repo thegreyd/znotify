@@ -1,17 +1,16 @@
 import urllib.parse
 
 class Torrent():
-    def __init__(self,thash,title,age,pub_Date,categ,size,seeds,peers):
+    
+    def __init__(self,thash,title,date,categ,size_Mb,seeds,peers):
         self.thash = thash
         self.title = title
-        self.pub_Date = pub_Date
+        self.date = date
         self.categ = categ
-        self.size = size
+        self.size_Mb = size_Mb
         self.seeds = seeds
         self.peers = int(peers) + int(seeds)
-        self.age = age
-        self.desc_Link = TorrentzEngine.Desc_Link(thash)
-        self.mag_Link = TorrentzEngine.Magnet_Link(thash, title)
+
 
 class TorrentzEngine():
     base_Url = "http://torrentz.in"
@@ -39,7 +38,7 @@ class TorrentzEngine():
         return url
     
     @classmethod        
-    def Magnet_Link(cls, thash, title):
+    def Magnet_Link(cls, title, thash):
         name = "&{}".format(urllib.parse.urlencode({'dn':title}))
         link = "magnet:?xt=urn:btih:{}{}{}".format(thash, name, cls.trackers)
         return link
@@ -49,4 +48,8 @@ class TorrentzEngine():
         link = "{}/{}".format(cls.base_Url, thash)
         return link
 
+    @classmethod
+    def Calc_Age(cls, tor_Obj):
+        time_Duration = tor_Obj.date.utcnow() - tor_Obj.date
+        return time_Duration
 
