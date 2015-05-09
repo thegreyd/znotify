@@ -32,7 +32,10 @@ class MyWindowClass(QMainWindow, form_class):
         self.resultsBrowser.setAllColumnsShowFocus(True)
         self.resultsBrowser.setSortingEnabled(True)
         self.resultsBrowser.setColumnWidth(search.headers["name"],400)
-        #self.resultsBrowser.hideColumn(search.headers["categ"])
+        
+        self.resultsBrowser.hideColumn(search.headers["hash"])
+        self.resultsBrowser.hideColumn(search.headers["size_Mb"])
+        self.resultsBrowser.hideColumn(search.headers["date"])
 
         self.combo_searchcateg.addItems(search.categories)
         self.btn_search.clicked.connect(self.Init_Search)
@@ -75,10 +78,11 @@ class MyWindowClass(QMainWindow, form_class):
                 self.SearchListModel.setData(self.SearchListModel.index(row, search.headers["seeds"]), tor_Obj.seeds)
                 self.SearchListModel.setData(self.SearchListModel.index(row, search.headers["peers"]), tor_Obj.peers)
                 self.SearchListModel.setData(self.SearchListModel.index(row, search.headers["categ"]), tor_Obj.categ)
+                self.SearchListModel.setData(self.SearchListModel.index(row, search.headers["date"]), str(tor_Obj.date))
                 
                 self.SearchListModel.setData(self.SearchListModel.index(row, search.headers["size"]), self.Format_Size(tor_Obj))
                 self.SearchListModel.setData(self.SearchListModel.index(row, search.headers["age"]), self.Format_Age(tor_Obj))
-                self.SearchListModel.setData(self.SearchListModel.index(row, search.headers["date"]), self.Format_Date(tor_Obj))
+                
                 
             self.resultsBrowser.sortByColumn(search.headers["peers"], Qt.DescendingOrder)
             self.btn_description.setEnabled(True)
@@ -91,17 +95,57 @@ class MyWindowClass(QMainWindow, form_class):
         
         self.status_label.setText(status)
             
-    def Format_Date(self,torrent_Obj):
-        date_Obj = torrent_Obj.date
-        return str(date_Obj)
-        
     def Format_Size(self,torrent_Obj):
+        size_Mb = torrent_Obj.size_Mb
+        GB = 1024
+        TB = 1024 * GB
+
+        if (size_Mb > TB): 
+            size = "{:.2f}".format(size_Mb/TB)
+            size_Unit = "TB"
+        elif (size_Mb > GB):
+            size = "{:.2f}".format(size_Mb/GB)
+            size_Unit = "GB"
+        else:
+            size = "{}".format(size_Mb)
+            size_Unit = "MB"
         
-        return ""
+        return "{} {}".format(size,size_Unit)
     
     def Format_Age(self,torrent_Obj):
         time_Duration = torrent.TorrentzEngine.Calc_Age(torrent_Obj)
-        return str(time_Duration)
+        seconds = time_Duration.total_seconds()
+
+        minute = 60
+        hour = 60 * minute
+        day = 24 * hour
+        week = 7 * day
+        month = 30 * day
+        year = 365 * day
+        
+        if (seconds > year):
+            age = seconds//year
+            age_Unit = "years"
+        elif (seconds > month):
+            age = seconds//month
+            age_Unit = "months"
+        elif (seconds > week):
+            age = seconds//week
+            age_Unit = "weeks"
+        elif (seconds > day):
+            age = seconds//day
+            age_Unit = "days"
+        elif (seconds > hour):
+            age = seconds//hour
+            age_Unit = "hours"
+        elif (seconds > minute):
+            age = seconds//minute
+            age_Unit = "minutes"
+        
+        if (age == 1):
+            age_Unit = age_Unit[:-1]
+        
+        return "{} {}".format(int(age), age_Unit)
 
     def Open_Download(self):
         indexes=set(i.row() for i in self.resultsBrowser.selectedIndexes())

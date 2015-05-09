@@ -30,8 +30,14 @@ categories_keywords = { "Anime" : ("anime"),
 class searchSortModel(QSortFilterProxyModel):
     def __init__(self, parent=None):
         QSortFilterProxyModel.__init__(self, parent)
-    
-    
+
+    def sort(self, column, order):
+        if (column == headers["age"]):
+            return QSortFilterProxyModel.sort(self, headers["date"], order)
+        elif (column == headers["size"]):
+            return QSortFilterProxyModel.sort(self, headers["size_Mb"], order)
+        
+        QSortFilterProxyModel.sort(self, column, order)
     
 class TorrentzSearch():
 
