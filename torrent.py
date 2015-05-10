@@ -30,7 +30,8 @@ class TorrentzEngine():
                         "Games" : ("game"),
                         "Movies" : ("movie",),
                         "Music" : ("music","audio"),
-                        "TV" : ("tv","show")
+                        "TV" : ("tv","show"),
+                        "Adult" : ("xxx","porn")
                     }
     @classmethod
     def Feed_Url(cls, query, page=1):
@@ -52,4 +53,13 @@ class TorrentzEngine():
     def Calc_Age(cls, tor_Obj):
         time_Duration = tor_Obj.date.utcnow() - tor_Obj.date
         return time_Duration
+
+    @classmethod
+    def Is_Safe(cls, categ_String):
+        if categ_String:
+            for i in cls.categories_Keywords["Adult"]:
+                if i in categ_String:
+                    return False
+            return True
+        return False
 
