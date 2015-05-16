@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.uic import *
 from query import Query
-import search, torrent
+import search, torrent, mail
 
 form_class=loadUiType("mainwindow.ui")[0]
 
@@ -52,7 +52,7 @@ class MyWindowClass(QMainWindow, form_class):
         self.status_label.setText("Status: Searching... ")
         
         category = self.combo_searchcateg.currentText()
-        query_Obj = Query(search_Text, category, safe_Search=False)
+        query_Obj = Query(search_Text, category, safe_Search=True)
         
         self.proxyModel.enable_Filter = query_Obj.safe_Search
 
@@ -91,7 +91,6 @@ class MyWindowClass(QMainWindow, form_class):
         
         self.status_label.setText(status)
 
-            
     def Format_Size(self,torrent_Obj):
         size_Mb = torrent_Obj.size_Mb
         GB = 1024

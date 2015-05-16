@@ -37,29 +37,35 @@ class TorrentzSearch():
 
     @classmethod
     def Search_Now(cls,query_Obj):
-        query = urllib.parse.quote(query_Obj.search_String)
+        format_Query = cls.Generate_Query(query_Obj)
         pages = 1
         
-        full_results = list()
-        for page_no in range(pages):
-            full_url = TorrentzEngine.Feed_Url(query, page_no)
-            req = urllib.request.Request(full_url,headers={'User-Agent': 'Mozilla/5.0'})
+        full_Results = list()
+        for page_No in range(pages):
+            full_Url = TorrentzEngine.Feed_Url(format_Query, page_No)
+            req = urllib.request.Request(full_Url, headers={'User-Agent': 'Mozilla/5.0'})
             response = urllib.request.urlopen(req)
-            parsed_results = MyParser.Parse_Page(response)
-            full_results.extend(parsed_results)
-        return tuple(full_results)
+            parsed_Results = MyParser.Parse_Page(response)
+            full_Results.extend(parsed_Results)
+        return tuple(full_Results)
 
     #used for demo purpose when internet connection not available
     @classmethod
     def Search_Static(cls, query_Obj):
-        query = urllib.parse.quote(query_Obj.search_String)
+        format_Query = cls.Generate_Query(query_Obj)
         pages = 1
-        full_results = list()
-        for page_no in range(pages):
+        
+        full_Results = list()
+        for page_No in range(pages):
             static=open("static.xml","r")
-            page_xml_obj=BeautifulSoup(static.read(),"xml")
-            parsed_results = MyParser.Parse_Page(response)
-        full_results.extend(parsed_results)
-
+            page_Xml_Obj=BeautifulSoup(static.read(),"xml")
+            parsed_Results = MyParser.Parse_Page(response)
+            full_Results.extend(parsed_Results)
+        return tuple(full_Results)
+    
+    @classmethod
     def Generate_Query(cls, query_Obj):
-        pass
+        search_String = query_Obj.search_String
+        categ = TorrentzEngine.categories_Keywords[query_Obj.category][0]
+        query = "{} {}".format(search_String, categ)
+        return urllib.parse.quote(query)

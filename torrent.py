@@ -24,17 +24,19 @@ class TorrentzEngine():
 
     categories = ("Any","Anime","Application","Books","Games","Movies","Music","TV")
 
-    categories_Keywords = { "Anime" : ("anime"),
-                        "Application" : ("app","software"),
-                        "Books" : ("book","comic"),
-                        "Games" : ("game"),
-                        "Movies" : ("movie",),
-                        "Music" : ("music","audio"),
-                        "TV" : ("tv","show"),
-                        "Adult" : ("xxx","porn")
+    categories_Keywords = { "Anime" : ["anime"],
+                        "Application" : ["app","software"],
+                        "Books" : ["book","comic"],
+                        "Games" : ["game"],
+                        "Movies" : ["movie",],
+                        "Music" : ["music","audio"],
+                        "TV" : ["tv","show"],
+                        "Adult" : ["xxx","porn"],
+                        "Any" : [""]
                     }
     @classmethod
     def Feed_Url(cls, query, page=1):
+        
         url = "{}/feed?q={}&p={}".format(cls.base_Url, query, page)
         return url
     
