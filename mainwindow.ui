@@ -34,7 +34,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab_filter">
        <attribute name="title">
@@ -95,8 +95,8 @@
            <property name="orientation">
             <enum>Qt::Vertical</enum>
            </property>
-           <widget class="QTreeView" name="treeView_2"/>
-           <widget class="QTreeView" name="treeView_3"/>
+           <widget class="QTreeView" name="filters_Browser"/>
+           <widget class="QTreeView" name="torrents_Browser"/>
           </widget>
          </widget>
         </item>
@@ -127,7 +127,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="pushButton">
+           <widget class="QPushButton" name="btn_add_search_as_filter">
             <property name="enabled">
              <bool>false</bool>
             </property>
