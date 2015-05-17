@@ -95,13 +95,11 @@ class MyWindowClass(QMainWindow, form_class):
         result = filter_Dialog.exec_()
         
         if result == 1:
-            self.Add_Filter(FilterDialog.filter_Obj)
+            self.Add_Filter(dialog.FilterDialog.filter_Obj)
         
     def Create_Filter_From_Search(self):
-        import copy
-        filter_Obj = copy.copy(query.Filter(search.TorrentzSearch.query_Obj))
-        print(filter_Obj.search_String)
-        #self.Add_Filter(filter_Obj)
+        filter_Obj = query.Filter(search.TorrentzSearch.query_Obj)
+        self.Add_Filter(filter_Obj)
 
     def Add_Filter(self, filter_Obj):
         row=self.TransferListModel.rowCount()
@@ -117,10 +115,10 @@ class MyWindowClass(QMainWindow, form_class):
         self.TransferListModel.setData(self.TransferListModel.index(row, transfers.headers_transfers["added_On"]), str(filter_Obj.date_Added))
 
 
-    def Reset_List(self):
-        row = self.SearchListModel.rowCount()
+    def Reset_List(self, std_Item_Model):
+        row = self.std_Item_Model.rowCount()
         if row > 0:
-            self.SearchListModel.removeRows(0, row)
+            self.std_Item_Model.removeRows(0, row)
         
     def Init_Search(self):
         self.status_label.setText("Status: Searching... ")
@@ -133,7 +131,7 @@ class MyWindowClass(QMainWindow, form_class):
         
         self.proxyModel.enable_Filter = search.TorrentzSearch.query_Obj.safe_Search
 
-        self.Reset_List()
+        self.Reset_List(self.SearchListModel)
         results = search.TorrentzSearch.Search_Now()
         self.Show_Results(results)
         
@@ -162,62 +160,10 @@ class MyWindowClass(QMainWindow, form_class):
             self.SearchListModel.setData(self.SearchListModel.index(row, search.headers["categ"]), tor_Obj.categ)
             self.SearchListModel.setData(self.SearchListModel.index(row, search.headers["date"]), str(tor_Obj.date))
             
-            self.SearchListModel.setData(self.SearchListModel.index(row, search.headers["size"]), self.Format_Size(tor_Obj))
-            self.SearchListModel.setData(self.SearchListModel.index(row, search.headers["age"]), self.Format_Age(tor_Obj))
+            self.SearchListModel.setData(self.SearchListModel.index(row, search.headers["size"]), torrent.Torrent.Format_Size(tor_Obj))
+            self.SearchListModel.setData(self.SearchListModel.index(row, search.headers["age"]), torrent.Torrent.Format_Age(tor_Obj))
             
             
-    def Format_Size(self,torrent_Obj):
-        size_Mb = torrent_Obj.size_Mb
-        GB = 1024
-        TB = 1024 * GB
-
-        if (size_Mb > TB): 
-            size = "{:.2f}".format(size_Mb/TB)
-            size_Unit = "TB"
-        elif (size_Mb > GB):
-            size = "{:.2f}".format(size_Mb/GB)
-            size_Unit = "GB"
-        else:
-            size = "{}".format(size_Mb)
-            size_Unit = "MB"
-        
-        return "{} {}".format(size,size_Unit)
-    
-    def Format_Age(self,torrent_Obj):
-        time_Duration = torrent.TorrentzEngine.Calc_Age(torrent_Obj)
-        seconds = time_Duration.total_seconds()
-
-        minute = 60
-        hour = 60 * minute
-        day = 24 * hour
-        week = 7 * day
-        month = 30 * day
-        year = 365 * day
-        
-        if (seconds > year):
-            age = seconds//year
-            age_Unit = "years"
-        elif (seconds > month):
-            age = seconds//month
-            age_Unit = "months"
-        elif (seconds > week):
-            age = seconds//week
-            age_Unit = "weeks"
-        elif (seconds > day):
-            age = seconds//day
-            age_Unit = "days"
-        elif (seconds > hour):
-            age = seconds//hour
-            age_Unit = "hours"
-        elif (seconds > minute):
-            age = seconds//minute
-            age_Unit = "minutes"
-        
-        if (age == 1):
-            age_Unit = age_Unit[:-1]
-        
-        return "{} {}".format(int(age), age_Unit)
-
     def Open_Download(self):
         indexes=set(i.row() for i in self.resultsBrowser.selectedIndexes())
         for i_row in indexes:
@@ -238,6 +184,3 @@ app = QApplication(sys.argv)
 myWindow = MyWindowClass(None)
 myWindow.show()
 sys.exit(app.exec_())
-
-def return_object():
-    return myWindow

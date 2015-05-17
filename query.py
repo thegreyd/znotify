@@ -16,9 +16,9 @@ class Query():
         self.safe_Search = True
         self.min_Seeds = 0
         self.min_Age = 0
-        self.min_Age_Unit = size_units["days"]
+        self.min_Age_Unit = Query.age_units["days"]
         self.max_Size = 1000
-        self.max_Size_unit = size_units["gb"]
+        self.max_Size_unit = Query.size_units["gb"]
         
 class Filter(Query):
     
@@ -36,19 +36,22 @@ class Filter(Query):
               "completed" : 2
     }
 
-    def __init__(self, orig = None):
+    def __init__(self, query_Obj = None):
         import datetime
-        
         Query.__init__(self)
         
-        self.status = statuses["active"]
+        self.status = Filter.statuses["active"]
         self.rate_Minute = 1.0
-        self.action = actions["notify"]
+        self.action = Filter.actions["notify"]
         self.email_Notify = True
         self.date_Added = datetime.datetime.now()
 
-    def copy_const(self,orig):
-        pass
-
-    def non_copy_const(self):
-        pass
+        if query_Obj != None:
+            self.search_String = query_Obj.search_String
+            self.category = query_Obj.category
+            self.safe_Search = query_Obj.safe_Search
+            self.min_Seeds = query_Obj.min_Seeds
+            self.min_Age = query_Obj.min_Age
+            self.min_Age_Unit = query_Obj.min_Age_Unit
+            self.max_Size = query_Obj.max_Size
+            self.max_Size_unit = query_Obj.max_Size_unit

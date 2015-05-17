@@ -11,6 +11,60 @@ class Torrent():
         self.seeds = seeds
         self.peers = int(peers) + int(seeds)
 
+    @classmethod
+    def Format_Size(cls, torrent_Obj):
+        size_Mb = torrent_Obj.size_Mb
+        GB = 1024
+        TB = 1024 * GB
+
+        if (size_Mb > TB): 
+            size = "{:.2f}".format(size_Mb/TB)
+            size_Unit = "TB"
+        elif (size_Mb > GB):
+            size = "{:.2f}".format(size_Mb/GB)
+            size_Unit = "GB"
+        else:
+            size = "{}".format(size_Mb)
+            size_Unit = "MB"
+        
+        return "{} {}".format(size,size_Unit)
+    
+    @classmethod
+    def Format_Age(cls, torrent_Obj):
+        time_Duration = torrent.TorrentzEngine.Calc_Age(torrent_Obj)
+        seconds = time_Duration.total_seconds()
+
+        minute = 60
+        hour = 60 * minute
+        day = 24 * hour
+        week = 7 * day
+        month = 30 * day
+        year = 365 * day
+        
+        if (seconds > year):
+            age = seconds//year
+            age_Unit = "years"
+        elif (seconds > month):
+            age = seconds//month
+            age_Unit = "months"
+        elif (seconds > week):
+            age = seconds//week
+            age_Unit = "weeks"
+        elif (seconds > day):
+            age = seconds//day
+            age_Unit = "days"
+        elif (seconds > hour):
+            age = seconds//hour
+            age_Unit = "hours"
+        elif (seconds > minute):
+            age = seconds//minute
+            age_Unit = "minutes"
+        
+        if (age == 1):
+            age_Unit = age_Unit[:-1]
+        
+        return "{} {}".format(int(age), age_Unit)
+
 
 class TorrentzEngine():
     base_Url = "http://torrentz.in"
