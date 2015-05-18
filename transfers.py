@@ -2,11 +2,11 @@ from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 
-headers_transfers_keywords = ("Name", "Category", "Min.Age", "Min.Seeds" ,"Max.Size", "AddedOn","Status", "Action")
+headers_transfers_keywords = ("Name", "Category", "Max.Age", "Min.Seeds" ,"Max.Size", "AddedOn","Status", "Action")
 
 headers_transfers = {"name":0, 
                     "categ":1, 
-                    "min_Age":2 ,
+                    "max_Age":2 ,
                     "min_Seeds":3, 
                     "max_Size":4,
                     "status":6, 

@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Create Filter</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
@@ -49,7 +49,7 @@
        <item>
         <widget class="QLabel" name="label_10">
          <property name="text">
-          <string>Minimum Age</string>
+          <string>Maximum Age</string>
          </property>
         </widget>
        </item>

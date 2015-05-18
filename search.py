@@ -14,7 +14,7 @@ header_data=("Name","Age","Date","Size","SizeMB","Seeders","Peers","Category","H
 class searchSortModel(QSortFilterProxyModel):
     def __init__(self, parent=None):
         QSortFilterProxyModel.__init__(self, parent)
-        self.enable_Filter = True
+        self.enable_Age_Filter = False
 
     def sort(self, column, order):
         if (column == headers["age"]):
@@ -25,11 +25,12 @@ class searchSortModel(QSortFilterProxyModel):
         QSortFilterProxyModel.sort(self, column, order)
 
     def filterAcceptsRow(self, source_Row, source_Parent):
-        if self.enable_Filter:
+        if self.enable_Age_Filter:
             index = self.sourceModel().index(source_Row, headers["categ"])
             categ = self.sourceModel().data(index)
             return torrent.TorrentzEngine.Is_Safe(categ)
-        return True
+        else :
+            return QSortFilterProxyModel.filterAcceptsRow(self, source_Row, source_Parent)
         
 
     

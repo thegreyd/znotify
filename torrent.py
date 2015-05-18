@@ -31,7 +31,7 @@ class Torrent():
     
     @classmethod
     def Format_Age(cls, torrent_Obj):
-        time_Duration = torrent.TorrentzEngine.Calc_Age(torrent_Obj)
+        time_Duration = TorrentzEngine.Calc_Age(torrent_Obj)
         seconds = time_Duration.total_seconds()
 
         minute = 60

@@ -7,12 +7,11 @@ import torrent, query
 form_class=loadUiType("create_filter_dialog.ui")[0]
 
 class FilterDialog(QDialog, form_class):
-    filter_Obj = query.Filter()
-
-    def __init__(self, parent=None):
+    
+    def __init__(self, filter_Obj, parent=None):
         QDialog.__init__(self, parent)
         self.setupUi(self)
-
+        self.filter_Obj = filter_Obj
         self.combo_sizeul.addItems(query.Query.size_units_keywords)
         self.combo_ageunit.addItems(query.Query.age_units_keywords)
         self.combo_categ.addItems(torrent.TorrentzEngine.categories)
@@ -23,8 +22,8 @@ class FilterDialog(QDialog, form_class):
         self.filter_Obj.category = self.combo_categ.currentText()
         
         self.filter_Obj.min_Seeds = self.spin_seeds.value()
-        self.filter_Obj.min_Age = self.spin_age.value()
-        self.filter_Obj.min_Age_Unit = self.combo_ageunit.currentText()
+        self.filter_Obj.max_Age = self.spin_age.value()
+        self.filter_Obj.max_Age_Unit = self.combo_ageunit.currentText()
         self.filter_Obj.max_Size = self.spin_sizeul.value()
         self.filter_Obj.max_Size_Unit = self.combo_sizeul.currentText()
         
@@ -43,3 +42,5 @@ class FilterDialog(QDialog, form_class):
             self.filter_Obj.action = query.Filter.actions["download"]
 
         QDialog.accept(self)
+
+class EditFilterDialog(FilterDialog):

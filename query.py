@@ -15,8 +15,8 @@ class Query():
         self.category = "Any"
         self.safe_Search = True
         self.min_Seeds = 0
-        self.min_Age = 0
-        self.min_Age_Unit = Query.age_units["days"]
+        self.max_Age = 0
+        self.max_Age_Unit = Query.age_units["days"]
         self.max_Size = 1000
         self.max_Size_unit = Query.size_units["gb"]
         
@@ -51,7 +51,15 @@ class Filter(Query):
             self.category = query_Obj.category
             self.safe_Search = query_Obj.safe_Search
             self.min_Seeds = query_Obj.min_Seeds
-            self.min_Age = query_Obj.min_Age
-            self.min_Age_Unit = query_Obj.min_Age_Unit
+            self.max_Age = query_Obj.max_Age
+            self.max_Age_Unit = query_Obj.max_Age_Unit
             self.max_Size = query_Obj.max_Size
             self.max_Size_unit = query_Obj.max_Size_unit
+
+    @classmethod
+    def Format_Size(cls, f):
+        return "{} {}".format(f.max_Size, f.max_Size_Unit)
+
+    @classmethod
+    def Format_Age(cls, f):
+        return "{} {}".format(f.max_Age, f.max_Age_Unit)
