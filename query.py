@@ -18,7 +18,7 @@ class Query():
         self.max_Age = 0
         self.max_Age_Unit = Query.age_units["days"]
         self.max_Size = 1000
-        self.max_Size_unit = Query.size_units["gb"]
+        self.max_Size_Unit = Query.size_units["gb"]
         
 class Filter(Query):
     
@@ -54,7 +54,7 @@ class Filter(Query):
             self.max_Age = query_Obj.max_Age
             self.max_Age_Unit = query_Obj.max_Age_Unit
             self.max_Size = query_Obj.max_Size
-            self.max_Size_unit = query_Obj.max_Size_unit
+            self.max_Size_Unit = query_Obj.max_Size_Unit
 
     @classmethod
     def Format_Size(cls, f):

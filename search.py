@@ -35,11 +35,11 @@ class searchSortModel(QSortFilterProxyModel):
 
     
 class TorrentzSearch():
-    query_Obj = query.Query()
     
     @classmethod
-    def Search_Now(cls):
-        format_Query = cls.Generate_Query()
+    def Search_Now(cls, query_Obj):
+        print("searchingnow...")
+        format_Query = cls.Generate_Query(query_Obj)
         pages = 1
         
         full_Results = list()
@@ -53,8 +53,8 @@ class TorrentzSearch():
 
     #used for demo purpose when internet connection not available
     @classmethod
-    def Search_Static(cls):
-        format_Query = cls.Generate_Query()
+    def Search_Static(cls, query_Obj):
+        format_Query = cls.Generate_Query(query_Obj)
         pages = 1
         
         full_Results = list()
@@ -65,8 +65,8 @@ class TorrentzSearch():
         return tuple(full_Results)
     
     @classmethod
-    def Generate_Query(cls):
-        search_String = cls.query_Obj.search_String
-        categ = torrent.TorrentzEngine.categories_Keywords[cls.query_Obj.category][0]
+    def Generate_Query(cls, query_Obj):
+        search_String = query_Obj.search_String
+        categ = torrent.TorrentzEngine.categories_Keywords[query_Obj.category][0]
         query = "{} {}".format(search_String, categ)
         return urllib.parse.quote(query)

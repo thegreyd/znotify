@@ -44,3 +44,4 @@ class FilterDialog(QDialog, form_class):
         QDialog.accept(self)
 
 class EditFilterDialog(FilterDialog):
+    pass

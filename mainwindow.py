@@ -13,12 +13,34 @@ class MyWindowClass(QMainWindow, form_class):
     def __init__(self, parent=None):
         QMainWindow.__init__(self, parent)
         self.setupUi(self)
+        self.Setup_Tray()
         self.Setup_Toolbar()
         self.Setup_Transfers_Ui()
         self.Setup_Search_Ui()
-        self.destroyed.connect(self.Save_Transfer_List)
+        self.Setup_Data()
+        self.destroyed.connect(self.Save_Data)
         
+    def Save_Data(self):    
+        self.Save_Transfer_List()
+        self.Save_Torrent_List()
+
+    def Setup_Data(self):
+        self.Setup_Transfer_List()
+        self.Setup_Torrent_List()
+
+    def Setup_Tray(self):
+        self.trayMenu = QMenu()
+        self.trayMenu.addAction(self.actionExit)
+
+        self.trayIcon = QSystemTrayIcon()
+        self.trayIcon.setIcon(QIcon("/home/sid/qbittorrent.png"))
+        self.trayIcon.setContextMenu(self.trayMenu)
+
+        self.trayIcon.show()
         
+    def Popup(self):
+        self.trayIcon.showMessage("Torrent Notifier", "Matching Torrents found for Filter!")
+
     def Setup_Toolbar(self):
         self.actionNew.triggered.connect(self.Create_Filter)
         self.actionDelete.triggered.connect(self.Delete_Filters)
@@ -30,6 +52,8 @@ class MyWindowClass(QMainWindow, form_class):
         self.actionExit.triggered.connect(self.close)
         self.actionEdit.triggered.connect(self.Edit_Filter)
         self.actionMarkComplete.triggered.connect(self.Mark_Complete_Filter)
+        self.actionDownload.triggered.connect(self.Open_Download_Transfer)
+        self.actionDescription.triggered.connect(self.Open_Desc_Transfer)
 
 
     def Setup_Transfers_Ui(self):
@@ -42,6 +66,11 @@ class MyWindowClass(QMainWindow, form_class):
         self.transfer_Proxy_Model.setDynamicSortFilter(True)
         self.transfer_Proxy_Model.setSourceModel(self.TransferListModel)
         
+        #self.filter_select = QItemSelectionModel(self.TransferListModel)
+        #self.filter_select.currentRowChanged.connect(self.Change_Torrent_View)
+
+        #self.filters_Browser.setSelectionModel(self.filter_select)
+
         self.filters_Browser.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.filters_Browser.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.filters_Browser.setModel(self.transfer_Proxy_Model)
@@ -51,16 +80,14 @@ class MyWindowClass(QMainWindow, form_class):
         self.filters_Browser.setColumnWidth(transfers.headers_transfers["name"],300)
         self.filters_Browser.sortByColumn(transfers.headers_transfers["added_On"], Qt.AscendingOrder)
 
-        self.Setup_Menu()
+        self.Setup_Filter_Menu()
         self.filters_Browser.setContextMenuPolicy(Qt.CustomContextMenu)
         self.filters_Browser.customContextMenuRequested.connect(self.Open_Filter_Menu)
         
-        self.Setup_Transfer_List()
-
         #setting torrents list in transfers tab
 
-        self.TorrentListModel = QStandardItemModel(0,len(transfers.headers_torrents_keywords))
-        self.TorrentListModel.setHorizontalHeaderLabels(transfers.headers_torrents_keywords)
+        self.TorrentListModel = QStandardItemModel(0,len(search.header_data))
+        self.TorrentListModel.setHorizontalHeaderLabels(search.header_data)
 
         self.torrent_Proxy_Model = search.searchSortModel(None)
         self.torrent_Proxy_Model.setDynamicSortFilter(True)
@@ -72,41 +99,23 @@ class MyWindowClass(QMainWindow, form_class):
         self.torrents_Browser.setRootIsDecorated(False)
         self.torrents_Browser.setAllColumnsShowFocus(True)
         self.torrents_Browser.setSortingEnabled(True)
-        self.torrents_Browser.setColumnWidth(transfers.headers_torrents["name"],400)
+        self.torrents_Browser.sortByColumn(search.headers["peers"], Qt.DescendingOrder)
+        self.torrents_Browser.setColumnWidth(search.headers["name"],400)
 
-        #setting different status views
+        self.torrents_Browser.hideColumn(search.headers["hash"])
+        self.torrents_Browser.hideColumn(search.headers["size_Mb"])
+        self.torrents_Browser.hideColumn(search.headers["date"])
+
+        self.Setup_Torrent_Menu()
+        self.torrents_Browser.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.torrents_Browser.customContextMenuRequested.connect(self.Open_Torrent_Menu)
 
         self.btn_viewall.clicked.connect(self.View_All_Filters)
         self.btn_viewactive.clicked.connect(self.View_Active_Filters)
         self.btn_viewpaused.clicked.connect(self.View_Paused_Filters)
         self.btn_viewcompleted.clicked.connect(self.View_Completed_Filters)
 
-    def Setup_Menu(self):
-        self.menu = QMenu()
-        self.menu.addAction(self.actionEdit)
-        self.menu.addAction(self.actionMarkComplete)
-
-    def Open_Filter_Menu(self, position):
-        indexes = set(i.row() for i in self.filters_Browser.selectedIndexes())
-        if len(indexes) == 1:
-            self.menu.exec_(self.filters_Browser.viewport().mapToGlobal(position))
     
-
-    def View_X_Filters(self, x):
-        self.transfer_Proxy_Model.setFilterFixedString(x)
-        self.transfer_Proxy_Model.setFilterKeyColumn(transfers.headers_transfers["status"])
-        
-    def View_All_Filters(self):
-        self.View_X_Filters("")
-    
-    def View_Active_Filters(self):
-        self.View_X_Filters(query.Filter.statuses_keywords[query.Filter.statuses["active"]])
-
-    def View_Paused_Filters(self):
-        self.View_X_Filters(query.Filter.statuses_keywords[query.Filter.statuses["paused"]])
-
-    def View_Completed_Filters(self):
-        self.View_X_Filters(query.Filter.statuses_keywords[query.Filter.statuses["completed"]])
     
     def Setup_Search_Ui(self):
         #setting up search tab filters_Browser 
@@ -137,35 +146,108 @@ class MyWindowClass(QMainWindow, form_class):
 
         self.btn_search.clicked.connect(self.Init_Search)
         self.btn_add_search_as_filter.clicked.connect(self.Create_Filter_From_Search)
-        self.btn_download.clicked.connect(self.Open_Download)
-        self.btn_description.clicked.connect(self.Open_Desc)
+        self.btn_download.clicked.connect(self.Open_Download_Search)
+        self.btn_description.clicked.connect(self.Open_Desc_Search)
 
+
+    def Setup_Filter_Menu(self):
+        self.filter_Menu = QMenu()
+        self.filter_Menu.addAction(self.actionEdit)
+        self.filter_Menu.addAction(self.actionMarkComplete)
+
+    def Open_Filter_Menu(self, position):
+        indexes = set(i.row() for i in self.filters_Browser.selectedIndexes())
+        if len(indexes) == 1:
+            self.filter_Menu.exec_(self.filters_Browser.viewport().mapToGlobal(position))
+
+    def Setup_Torrent_Menu(self):
+        self.torrent_Menu = QMenu()
+        self.torrent_Menu.addAction(self.actionDownload)
+        self.torrent_Menu.addAction(self.actionDescription)
+
+    def Open_Torrent_Menu(self, position):
+        self.torrent_Menu.exec_(self.torrents_Browser.viewport().mapToGlobal(position))
+    
+
+    def Change_Torrent_View(self):
+        print(self.filter_select.selectedRows())
+
+
+    def View_X_Filters(self, x):
+        self.transfer_Proxy_Model.setFilterFixedString(x)
+        self.transfer_Proxy_Model.setFilterKeyColumn(transfers.headers_transfers["status"])
+        
+    def View_All_Filters(self):
+        self.View_X_Filters("")
+    
+    def View_Active_Filters(self):
+        self.View_X_Filters(query.Filter.statuses_keywords[query.Filter.statuses["active"]])
+
+    def View_Paused_Filters(self):
+        self.View_X_Filters(query.Filter.statuses_keywords[query.Filter.statuses["paused"]])
+
+    def View_Completed_Filters(self):
+        self.View_X_Filters(query.Filter.statuses_keywords[query.Filter.statuses["completed"]])
 
     def closeEvent(self, event):
-        self.Save_Transfer_List()
+        self.Save_Data()
         event.accept()
 
     def Create_Transfer_List(self):
+        print("creating transfer list")
         import pickle, collections
         with open("tb.pdict", "wb") as f:
             pickle.dump(collections.OrderedDict(), f)
 
     def Setup_Transfer_List(self):
+        print("setting up transfer list")
         import pickle 
-        with open("tb.pdict", "rb") as f:
-            try:
+        try:
+            with open("tb.pdict", "rb") as f:
                 self.transfers_Dict = pickle.load(f)
-            except:
-                self.Create_Transfer_List()
-                self.transfers_Dict = pickle.load(f)
-
+        except:
+            self.Create_Transfer_List()
+            self.Setup_Transfer_List()
+        
         for filter_Obj in self.transfers_Dict.values():
             self.Add_Filter(filter_Obj)
 
     def Save_Transfer_List(self):
+        print("saving transfer list")
         import pickle
         with open("tb.pdict", "wb") as f:
             pickle.dump(self.transfers_Dict, f)
+
+    
+    def Setup_Torrent_List(self):
+        print("setting up torrent list")
+        import pickle 
+        try:
+            with open("tbresults.pdict", "rb") as f:
+                self.torrents_Dict = pickle.load(f)
+        except:
+            self.Create_Torrent_List()
+            self.Setup_Torrent_List()
+        
+        for results in self.torrents_Dict.values():
+            self.Show_Filter_Results(results)
+
+    def Save_Torrent_List(self):
+        print("saving torrent list")
+        import pickle
+        with open("tbresults.pdict", "wb") as f:
+            pickle.dump(self.torrents_Dict, f)
+
+
+    def Create_Torrent_List(self):
+        print("creating torrent list")
+        import pickle, collections
+        with open("tbresults.pdict", "wb") as f:
+            pickle.dump(collections.OrderedDict(), f)
+
+
+
+
 
     def Create_Filter(self):
         filter_Obj = query.Filter()
@@ -174,10 +256,12 @@ class MyWindowClass(QMainWindow, form_class):
         
         if result == 1:
             self.Add_Filter(filter_Dialog.filter_Obj)
+            self.Init_Filter_Search(filter_Obj)
         
     def Create_Filter_From_Search(self):
-        filter_Obj = query.Filter(search.TorrentzSearch.query_Obj)
+        filter_Obj = query.Filter(self.query_Obj)
         self.Add_Filter(filter_Obj)
+        self.Init_Filter_Search(filter_Obj)
 
     def Add_Filter(self, filter_Obj):
         row=self.TransferListModel.rowCount()
@@ -198,7 +282,6 @@ class MyWindowClass(QMainWindow, form_class):
         indexes=sorted(list(set(i.row() for i in self.filters_Browser.selectedIndexes())), reverse = True)
         for i in indexes:
             f_Date = self.transfer_Proxy_Model.data(self.transfer_Proxy_Model.index(i, transfers.headers_transfers["added_On"]))
-            print("i is ",i)
             self.TransferListModel.removeRow(i)
             del self.transfers_Dict[f_Date]
 
@@ -242,20 +325,26 @@ class MyWindowClass(QMainWindow, form_class):
         if row > 0:
             std_Item_Model.removeRows(0, row)
         
+    def Init_Filter_Search(self, filter_Obj):
+        results = search.TorrentzSearch.Search_Now(filter_Obj)
+        self.torrents_Dict[str(filter_Obj.date_Added)] = results
+        self.Show_Filter_Results(results)
+        
     def Init_Search(self):
         self.status_label.setText("Status: Searching... ")
 
         search_Text = self.search_bar.text()
         category = self.combo_searchcateg.currentText()
 
-        search.TorrentzSearch.query_Obj.search_String = search_Text
-        search.TorrentzSearch.query_Obj.category = category
+        self.query_Obj = query.Query()
+        self.query_Obj.search_String = search_Text
+        self.query_Obj.category = category
         
-        self.proxyModel.enable_Age_Filter = search.TorrentzSearch.query_Obj.safe_Search
+        self.proxyModel.enable_Age_Filter = self.query_Obj.safe_Search
 
         self.Reset_List(self.SearchListModel)
-        results = search.TorrentzSearch.Search_Now()
-        self.Show_Results(results)
+        results = search.TorrentzSearch.Search_Now(self.query_Obj)
+        self.Show_Search_Results(results)
         
         self.btn_description.setEnabled(True)
         self.btn_download.setEnabled(True)
@@ -268,9 +357,9 @@ class MyWindowClass(QMainWindow, form_class):
         self.status_label.setText(status)
         self.resultsBrowser.scrollToTop()
         
-    def Show_Results(self,results):
+    def Show_Search_Results(self,results):
         for tor_Obj in results:
-            row=self.SearchListModel.rowCount()
+            row = self.SearchListModel.rowCount()
             self.SearchListModel.insertRow(row)
             
             self.SearchListModel.setData(self.SearchListModel.index(row, search.headers["hash"]), tor_Obj.thash)
@@ -284,21 +373,58 @@ class MyWindowClass(QMainWindow, form_class):
             self.SearchListModel.setData(self.SearchListModel.index(row, search.headers["size"]), torrent.Torrent.Format_Size(tor_Obj))
             self.SearchListModel.setData(self.SearchListModel.index(row, search.headers["age"]), torrent.Torrent.Format_Age(tor_Obj))
             
+    def Show_Filter_Results(self, results):
+        top = 10
+        i = 0
+        for tor_Obj in results:
             
-    def Open_Download(self):
-        indexes=set(i.row() for i in self.resultsBrowser.selectedIndexes())
+            if i > top:
+                break
+            i+=1
+            
+            row = self.TorrentListModel.rowCount()
+            self.TorrentListModel.insertRow(row)
+            
+            self.TorrentListModel.setData(self.TorrentListModel.index(row, search.headers["hash"]), tor_Obj.thash)
+            self.TorrentListModel.setData(self.TorrentListModel.index(row, search.headers["name"]), tor_Obj.title)
+            self.TorrentListModel.setData(self.TorrentListModel.index(row, search.headers["size_Mb"]), tor_Obj.size_Mb)
+            self.TorrentListModel.setData(self.TorrentListModel.index(row, search.headers["seeds"]), tor_Obj.seeds)
+            self.TorrentListModel.setData(self.TorrentListModel.index(row, search.headers["peers"]), tor_Obj.peers)
+            self.TorrentListModel.setData(self.TorrentListModel.index(row, search.headers["categ"]), tor_Obj.categ)
+            self.TorrentListModel.setData(self.TorrentListModel.index(row, search.headers["date"]), str(tor_Obj.date))
+            
+            self.TorrentListModel.setData(self.TorrentListModel.index(row, search.headers["size"]), torrent.Torrent.Format_Size(tor_Obj))
+            self.TorrentListModel.setData(self.TorrentListModel.index(row, search.headers["age"]), torrent.Torrent.Format_Age(tor_Obj))
+        
+        if i > 0:
+            self.Popup()
+
+    def Open_Download(self, tv):
+        indexes=set(i.row() for i in tv.selectedIndexes())
         for i_row in indexes:
-            title = self.proxyModel.data(self.proxyModel.index(i_row, search.headers["name"]))
-            thash = self.proxyModel.data(self.proxyModel.index(i_row, search.headers["hash"]))
+            title = tv.model().data(tv.model().index(i_row, search.headers["name"]))
+            thash = tv.model().data(tv.model().index(i_row, search.headers["hash"]))
             link = torrent.TorrentzEngine.Magnet_Link(title, thash)
             QDesktopServices.openUrl(QUrl(link))
 
-    def Open_Desc(self):
-        indexes=set(i.row() for i in self.resultsBrowser.selectedIndexes())
+    def Open_Desc(self, tv):
+        indexes=set(i.row() for i in tv.selectedIndexes())
         for i_row in indexes:
-            thash = self.proxyModel.data(self.proxyModel.index(i_row, search.headers["hash"]))
+            thash = tv.model().data(tv.model().index(i_row, search.headers["hash"]))
             link = torrent.TorrentzEngine.Desc_Link(thash)
             QDesktopServices.openUrl(QUrl(link))
+
+    def Open_Download_Transfer(self):
+        self.Open_Download(self.torrents_Browser)
+
+    def Open_Desc_Transfer(self):
+        self.Open_Desc(self.torrents_Browser)        
+
+    def Open_Download_Search(self):
+        self.Open_Download(self.resultsBrowser)
+
+    def Open_Desc_Search(self):
+        self.Open_Desc(self.resultsBrowser)        
 
 if __name__ == "__main__":
     import sys
