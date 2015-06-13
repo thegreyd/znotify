@@ -19,33 +19,40 @@ months={"Jan":1,
 class MyParser():
     
     @classmethod
-    def Parse_Page(cls, request_Obj):
+    def Parse_Page(cls, request_Obj, limit = 100):
         
         bs_Obj=BeautifulSoup(request_Obj,"xml")
         torrents_List = list()
         
         for it in bs_Obj.find_all("item"):
-            title = str(it.title.string)
-            categ=str(it.category.string)
             
-            pub_Date = str(it.pubDate.string).split()
-            day = int(pub_Date[1])
-            mon = months[pub_Date[2]]
-            year = int(pub_Date[3])
-            time = pub_Date[4].split(":")
-            hours = int(time[0])
-            minutes = int(time[1])
-            seconds = int(time[2])
+            if limit > 0:
+                title = str(it.title.string)
+                categ=str(it.category.string)
+                
+                pub_Date = str(it.pubDate.string).split()
+                day = int(pub_Date[1])
+                mon = months[pub_Date[2]]
+                year = int(pub_Date[3])
+                time = pub_Date[4].split(":")
+                hours = int(time[0])
+                minutes = int(time[1])
+                seconds = int(time[2])
 
-            date_Time_Obj = datetime(year, mon, day, hours, minutes, seconds)
+                date_Time_Obj = datetime(year, mon, day, hours, minutes, seconds)
+                
+                desc = str(it.description.string).split()
+                size_Mb = int(desc[1])
+                seeds = int(desc[4].replace(",",""))
+                peers = int(desc[6].replace(",",""))
+                thash = desc[8]
+                
+                a_Torrent = Torrent(thash=thash,title=title,date=date_Time_Obj,categ=categ,size_Mb=size_Mb,seeds=seeds,peers=peers)
+                torrents_List.append(a_Torrent)
             
-            desc = str(it.description.string).split()
-            size_Mb = int(desc[1])
-            seeds = int(desc[4].replace(",",""))
-            peers = int(desc[6].replace(",",""))
-            thash = desc[8]
+            else:
+                break
             
-            a_Torrent = Torrent(thash=thash,title=title,date=date_Time_Obj,categ=categ,size_Mb=size_Mb,seeds=seeds,peers=peers)
-            torrents_List.append(a_Torrent)
+            limit-=1
 
         return torrents_List        

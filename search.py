@@ -35,9 +35,10 @@ class searchSortModel(QSortFilterProxyModel):
 
     
 class TorrentzSearch():
+    gen_adv = ""
     
     @classmethod
-    def Search_Now(cls, query_Obj):
+    def Search_Now(cls, query_Obj, limit = 100):
         print("searchingnow...")
         format_Query = cls.Generate_Query(query_Obj)
         pages = 1
@@ -47,8 +48,9 @@ class TorrentzSearch():
             full_Url = torrent.TorrentzEngine.Feed_Url(format_Query, page_No)
             req = urllib.request.Request(full_Url, headers={'User-Agent': 'Mozilla/5.0'})
             response = urllib.request.urlopen(req)
-            parsed_Results = MyParser.Parse_Page(response)
+            parsed_Results = MyParser.Parse_Page(response, limit = limit)
             full_Results.extend(parsed_Results)
+        print("search results found {}".format(len(full_Results)))
         return tuple(full_Results)
 
     #used for demo purpose when internet connection not available
@@ -68,5 +70,25 @@ class TorrentzSearch():
     def Generate_Query(cls, query_Obj):
         search_String = query_Obj.search_String
         categ = torrent.TorrentzEngine.categories_Keywords[query_Obj.category][0]
-        query = "{} {}".format(search_String, categ)
-        return urllib.parse.quote(query)
+        min_Seeds = query_Obj.min_Seeds
+        max_Age = query_Obj.max_Age
+        max_Age_Unit = query_Obj.max_Age_Unit
+        max_Size = query_Obj.max_Size
+        max_Size_Unit = query_Obj.max_Size_Unit
+        
+        seed_filter, size_filter, age_filter = "","",""
+
+        if min_Seeds > 0:
+            seed_filter = "seed > {}".format(min_Seeds)
+        if max_Size > 0:
+            size_filter = "size < {}{}".format(max_Size, max_Size_Unit)
+        if max_Age > 0:
+            age_filter = "added < {}{}".format(max_Age, max_Age_Unit)
+        
+        adv = [x for x in (seed_filter, size_filter, age_filter) if x!=""]
+        TorrentzSearch.gen_adv = " ".join(adv) if adv else "None"
+
+        l = [x for x in (search_String, categ, seed_filter, size_filter, age_filter) if x!=""]
+        gen_query = " ".join(l)
+        print(gen_query)
+        return urllib.parse.quote(gen_query)

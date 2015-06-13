@@ -1,14 +1,12 @@
 class Query():
     size_units_keywords = ("MB","GB")
-    size_units = { "mb" : 0,
-                   "gb" : 1
-    }
+    size_units = {"mb": 0, "gb": 1,"m":0,"g":1}
+    size_search_units_keywords = ("m","g")
+    
 
     age_units_keywords = ("days","months","years")
-    age_units = { "days" : 0,
-                  "months" : 1,
-                  "years" : 2
-    }
+    age_units = {"days":0,"months":1,"years":2,"d":0,"m":1,"y":2}
+    age_search_units_keywords = ("d","m","y")
 
     def __init__(self):
         self.search_String = None
@@ -16,9 +14,9 @@ class Query():
         self.safe_Search = True
         self.min_Seeds = 0
         self.max_Age = 0
-        self.max_Age_Unit = Query.age_units["days"]
-        self.max_Size = 1000
-        self.max_Size_Unit = Query.size_units["gb"]
+        self.max_Age_Unit = Query.age_search_units_keywords[Query.age_units["days"]]
+        self.max_Size = 0
+        self.max_Size_Unit = Query.size_search_units_keywords[Query.size_units["mb"]]
         
 class Filter(Query):
     
@@ -45,6 +43,7 @@ class Filter(Query):
         self.action = Filter.actions["notify"]
         self.email_Notify = True
         self.date_Added = datetime.datetime.now()
+        self.result_Found = False
 
         if query_Obj != None:
             self.search_String = query_Obj.search_String

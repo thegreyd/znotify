@@ -34,7 +34,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab_filter">
        <attribute name="title">
@@ -127,6 +127,13 @@
            </widget>
           </item>
           <item>
+           <widget class="QPushButton" name="btn_advancedsearch">
+            <property name="text">
+             <string>Advanced</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QPushButton" name="btn_add_search_as_filter">
             <property name="enabled">
              <bool>false</bool>
@@ -145,7 +152,49 @@
             <property name="text">
              <string>Status: Not Running</string>
             </property>
+            <property name="wordWrap">
+             <bool>false</bool>
+            </property>
            </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_3">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeType">
+             <enum>QSizePolicy::Minimum</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QLabel" name="advanced_label">
+            <property name="text">
+             <string>Advanced: None</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeType">
+             <enum>QSizePolicy::Expanding</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
           </item>
          </layout>
         </item>
@@ -289,7 +338,6 @@
    <addaction name="separator"/>
    <addaction name="actionOptions"/>
   </widget>
-  
   <action name="actionNew">
    <property name="text">
     <string>Create Filter</string>
@@ -298,7 +346,6 @@
     <string>Create Filter</string>
    </property>
   </action>
-  
   <action name="actionExit">
    <property name="text">
     <string>Exit</string>
@@ -307,7 +354,6 @@
     <string>Exit</string>
    </property>
   </action>
-  
   <action name="actionOptions">
    <property name="text">
     <string>&amp;Options...</string>
@@ -316,13 +362,11 @@
     <string>Options</string>
    </property>
   </action>
-  
   <action name="actionAbout">
    <property name="text">
     <string>&amp;About</string>
    </property>
   </action>
-  
   <action name="actionStart">
    <property name="text">
     <string>&amp;Resume</string>
@@ -331,7 +375,6 @@
     <string>Resume</string>
    </property>
   </action>
-
   <action name="actionEdit">
    <property name="text">
     <string>Edit</string>
@@ -340,7 +383,6 @@
     <string>Edit Filter</string>
    </property>
   </action>
-  
   <action name="actionDownload">
    <property name="text">
     <string>Download</string>
@@ -349,7 +391,6 @@
     <string>Download</string>
    </property>
   </action>
-
   <action name="actionDescription">
    <property name="text">
     <string>Go to Description</string>
@@ -358,7 +399,6 @@
     <string>Go to Description</string>
    </property>
   </action>
-
   <action name="actionMarkComplete">
    <property name="text">
     <string>Mark As Completed</string>
@@ -367,7 +407,6 @@
     <string>Mark As Completed</string>
    </property>
   </action>
-
   <action name="actionPause">
    <property name="text">
     <string>&amp;Pause</string>
@@ -376,7 +415,6 @@
     <string>Pause</string>
    </property>
   </action>
-  
   <action name="actionDelete">
    <property name="text">
     <string>&amp;Delete</string>
@@ -385,7 +423,6 @@
     <string>Delete</string>
    </property>
   </action>
-  
   <action name="actionWebsite">
    <property name="icon">
     <iconset>
@@ -395,19 +432,16 @@
     <string>Visit &amp;Website</string>
    </property>
   </action>
-  
   <action name="actionDocumentation">
    <property name="text">
     <string>&amp;Documentation</string>
    </property>
   </action>
-
   <action name="actionStartAll">
    <property name="text">
     <string>Resume &amp;All</string>
    </property>
   </action>
-  
   <action name="actionPauseAll">
    <property name="text">
     <string>Pause &amp;All</string>

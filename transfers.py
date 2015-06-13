@@ -15,14 +15,6 @@ headers_transfers = {"name":0,
                     }
 
 
+headers_torrents = {"name":0,"age":1,"date":2,"size":3,"size_Mb":4,"seeds":5,"peers":6,"categ":7,"hash":8, "fid":9}
 
-headers_torrents_keywords = ("Name", "Category","Age","Size","Seeders","Peers")
-
-headers_torrents = {"name":0, 
-                    "size":3, 
-                    "seeders":4, 
-                    "peers":5, 
-                    "age":2, 
-                    "categ":1
-                    }
-    
+headers_torrents_keywords = ("Name","Age","Date","Size","SizeMB","Seeders","Peers","Category","Hash", "FilterId")
