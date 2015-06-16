@@ -23,10 +23,12 @@ class MyWindowClass(QMainWindow, form_class):
     def Save_Data(self):    
         self.Save_Transfer_List()
         self.Save_Torrent_List()
+        self.Stats_List()
 
     def Setup_Data(self):
         self.Setup_Transfer_List()
         self.Setup_Torrent_List()
+        self.Stats_List()
 
     def Setup_Tray(self):
         self.trayMenu = QMenu()
@@ -81,7 +83,6 @@ class MyWindowClass(QMainWindow, form_class):
         self.filters_Browser.customContextMenuRequested.connect(self.Open_Filter_Menu)
 
         self.filter_select = self.filters_Browser.selectionModel()
-        #self.filter_select.currentRowChanged.connect(self.Change_Torrent_View)
         self.filter_select.selectionChanged.connect(self.Change_Torrent_View)
         
         #setting torrents list in transfers tab
@@ -191,6 +192,8 @@ class MyWindowClass(QMainWindow, form_class):
         
         r = "hakunaMatata" if not indexes else "|".join(list_of_Id)
 
+        #r = ".*" if not indexes else "|".join(list_of_Id)
+
         self.torrent_Proxy_Model.setFilterRegExp(QRegExp(r))            
         self.torrent_Proxy_Model.setFilterKeyColumn(transfers.headers_torrents["fid"])
 
@@ -217,13 +220,15 @@ class MyWindowClass(QMainWindow, form_class):
         event.accept()
 
     def Create_Transfer_List(self):
-        print("creating transfer list")
+        print("creating transfer list..")
+        
         import pickle, collections
         with open("tb.pdict", "wb") as f:
             pickle.dump(collections.OrderedDict(), f)
 
     def Setup_Transfer_List(self):
-        print("setting up transfer list")
+        print("setting up transfer list..")
+        
         import pickle 
         try:
             with open("tb.pdict", "rb") as f:
@@ -236,14 +241,16 @@ class MyWindowClass(QMainWindow, form_class):
             self.Add_Filter(filter_Obj)
 
     def Save_Transfer_List(self):
-        print("saving transfer list")
+        print("saving transfer list..")
+        
         import pickle
         with open("tb.pdict", "wb") as f:
             pickle.dump(self.transfers_Dict, f)
 
     
     def Setup_Torrent_List(self):
-        print("setting up torrent list")
+        print("setting up torrent list..")
+        
         import pickle 
         try:
             with open("tbresults.pdict", "rb") as f:
@@ -255,20 +262,42 @@ class MyWindowClass(QMainWindow, form_class):
         for fid,results in self.torrents_Dict.items():
             self.Show_Filter_Results(fid, results)
 
+    def Refresh_Torrent_List(self):
+        print("refreshing torrent list...")
+        
+        self.Reset_List(self.torrent_Proxy_Model)
+        for fid,results in self.torrents_Dict.items():
+            self.Show_Filter_Results(fid, results)
+
     def Save_Torrent_List(self):
-        print("saving torrent list")
+        print("saving torrent list..")
+        
         import pickle
         with open("tbresults.pdict", "wb") as f:
             pickle.dump(self.torrents_Dict, f)
 
-
     def Create_Torrent_List(self):
-        print("creating torrent list")
+        print("creating torrent list..")
+        
         import pickle, collections
         with open("tbresults.pdict", "wb") as f:
             pickle.dump(collections.OrderedDict(), f)
 
+    def Stats_Torrent_List(self):
+        print("stats torrent list - no.of.filters",len(self.torrents_Dict))
+        for fid,results in self.torrents_Dict.items():
+            print("fid: {} no.of.torrents {}".format(fid,len(results)))
+
+    def Stats_Transfer_List(self):
+        print("stats transfer list - no.of.filters",len(self.transfers_Dict))
+
+    def Stats_List(self):
+        self.Stats_Transfer_List()
+        self.Stats_Torrent_List()
+        
     def Create_Filter(self):
+        print("creating filter..")
+
         filter_Obj = query.Filter()
         filter_Dialog = dialog.FilterDialog(filter_Obj)
         result = filter_Dialog.exec_()
@@ -276,16 +305,29 @@ class MyWindowClass(QMainWindow, form_class):
         if result == 1:
             self.Add_Filter(filter_Dialog.filter_Obj)
             self.Init_Filter_Search(filter_Obj)
-        
+            self.Refresh_Torrent_List()
+            
+            row = self.TransferListModel.rowCount()
+            #self.Change_Torrent_View()
+            
+            
     def Create_Filter_From_Search(self):
+        print("creating filter from search query..")
+
         filter_Obj = query.Filter(self.query_Obj)
         self.Add_Filter(filter_Obj)
         self.Init_Filter_Search(filter_Obj)
+        self.Refresh_Torrent_List()
+        
 
-    def Add_Filter(self, filter_Obj):
+    def Add_Filter(self,filter_Obj):
+        self.transfers_Dict[str(filter_Obj.date_Added)] = filter_Obj
+        self.Show_Filter(filter_Obj)
+        #self.Init_Filter_Search(filter_Obj)
+
+    def Show_Filter(self, filter_Obj):
         row=self.TransferListModel.rowCount()
         self.TransferListModel.insertRow(row)
-        self.transfers_Dict[str(filter_Obj.date_Added)] = filter_Obj
         
         self.TransferListModel.setData(self.TransferListModel.index(row, transfers.headers_transfers["name"]), filter_Obj.search_String)
         self.TransferListModel.setData(self.TransferListModel.index(row, transfers.headers_transfers["categ"]), filter_Obj.category)
@@ -298,13 +340,21 @@ class MyWindowClass(QMainWindow, form_class):
 
 
     def Delete_Filters(self):
+        print("deleting filters..")
+
         indexes=sorted(list(set(i.row() for i in self.filters_Browser.selectedIndexes())), reverse = True)
         for i in indexes:
             f_Date = self.transfer_Proxy_Model.data(self.transfer_Proxy_Model.index(i, transfers.headers_transfers["added_On"]))
             self.TransferListModel.removeRow(i)
             del self.transfers_Dict[f_Date]
-
-
+            del self.torrents_Dict[f_Date]
+        
+            l=0
+            for j in range(0, self.TorrentListModel.rowCount()):
+                if self.TorrentListModel.data(self.TorrentListModel.index(j-l, transfers.headers_torrents["fid"])) == f_Date:
+                    self.TorrentListModel.removeRow(j-l)
+                    l+=1
+        
     def Set_Status(self, st, indexes):
         for i in indexes:
             f_Date = self.transfer_Proxy_Model.data(self.transfer_Proxy_Model.index(i, transfers.headers_transfers["added_On"]))
@@ -345,7 +395,7 @@ class MyWindowClass(QMainWindow, form_class):
         result = as_Dialog.exec_()        
 
     def Reset_List(self, model):
-        print("resetting {}".format(model))
+        print("resetting list..")
 
         row = model.rowCount()
         if row > 0:
@@ -355,22 +405,20 @@ class MyWindowClass(QMainWindow, form_class):
         print("Initialising Filter Search...")
 
         results = search.TorrentzSearch.Search_Now(filter_Obj, limit = 10)
+        filter_Obj.torrents_Found = len(results)
         self.torrents_Dict[str(filter_Obj.date_Added)] = results
         self.Show_Filter_Results(filter_Obj.date_Added, results)
-        
+
     def Init_Search(self):
         print("Initialising Search...")
-
         self.status_label.setText("Status: Searching... ")
 
         search_Text = self.search_bar.text()
         category = self.combo_searchcateg.currentText()
         self.query_Obj.search_String = search_Text
         self.query_Obj.category = category
-
-        self.proxyModel.enable_Age_Filter = self.query_Obj.safe_Search
-
         self.Reset_List(self.SearchListModel)
+        
         results = search.TorrentzSearch.Search_Now(self.query_Obj)
         self.Show_Search_Results(results)
         
@@ -378,9 +426,14 @@ class MyWindowClass(QMainWindow, form_class):
         self.btn_download.setEnabled(True)
         self.btn_add_search_as_filter.setEnabled(True)
         
-        status = "Status: {} Results Found. ".format(self.proxyModel.rowCount())
-        if self.proxyModel.rowCount() == 0:
-            status = "Status: No Results Found. Please Check if you correctly typed the query."
+        status = "Status: "
+        r = self.proxyModel.rowCount()
+        if r == 0:
+            status += "No Results Found. Check your query for errors."
+        elif r == 100:
+            status += "Top 100 Results."
+        else:
+            status += "{} Results.".format(r)
         
         self.status_label.setText(status)
         self.advanced_label.setText("Advanced: {}".format(search.TorrentzSearch.gen_adv))
@@ -389,7 +442,6 @@ class MyWindowClass(QMainWindow, form_class):
     def Show_Result(self, model, tor_Obj, headers):
         row = model.rowCount()
         model.insertRow(row)
-        
         model.setData(model.index(row, headers["hash"]), tor_Obj.thash)
         model.setData(model.index(row, headers["name"]), tor_Obj.title)
         model.setData(model.index(row, headers["size_Mb"]), tor_Obj.size_Mb)
@@ -397,10 +449,8 @@ class MyWindowClass(QMainWindow, form_class):
         model.setData(model.index(row, headers["peers"]), tor_Obj.peers)
         model.setData(model.index(row, headers["categ"]), tor_Obj.categ)
         model.setData(model.index(row, headers["date"]), str(tor_Obj.date))
-        
         model.setData(model.index(row, headers["size"]), torrent.Torrent.Format_Size(tor_Obj))
         model.setData(model.index(row, headers["age"]), torrent.Torrent.Format_Age(tor_Obj))
-
 
     def Show_Search_Results(self, results):
         print("displaying search results...")
@@ -410,12 +460,16 @@ class MyWindowClass(QMainWindow, form_class):
             
             
     def Show_Filter_Results(self, fid, results):
-        print("displaying filter results...")
         
+        row = self.TransferListModel.rowCount() - 1
+        self.TransferListModel.setData(self.TransferListModel.index(row, transfers.headers_transfers["torrents_Found"]), len(results))
+
         for tor_Obj in results:
             self.Show_Result(self.TorrentListModel, tor_Obj, transfers.headers_torrents)
             row = self.TorrentListModel.rowCount() - 1
             self.TorrentListModel.setData(self.TorrentListModel.index(row, transfers.headers_torrents["fid"]), fid)
+            
+            
             
     def Open_Download(self, tv):
         print("redirecting torrent for download...")

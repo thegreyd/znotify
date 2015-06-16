@@ -43,7 +43,7 @@ class Filter(Query):
         self.action = Filter.actions["notify"]
         self.email_Notify = True
         self.date_Added = datetime.datetime.now()
-        self.result_Found = False
+        self.torrents_Found = 0
 
         if query_Obj != None:
             self.search_String = query_Obj.search_String
@@ -57,8 +57,8 @@ class Filter(Query):
 
     @classmethod
     def Format_Size(cls, f):
-        return "{} {}".format(f.max_Size, f.max_Size_Unit)
+        return "{} {}".format(f.max_Size, Query.size_units_keywords[Query.size_units[f.max_Size_Unit]]) 
 
     @classmethod
     def Format_Age(cls, f):
-        return "{} {}".format(f.max_Age, f.max_Age_Unit)
+        return "{} {}".format(f.max_Age, Query.age_units_keywords[Query.age_units[f.max_Age_Unit]])

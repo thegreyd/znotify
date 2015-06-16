@@ -76,17 +76,19 @@ class TorrentzEngine():
                 &tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969
                 &tr=udp%3A%2F%2F9.rarbg.com%3A2710%2Fannounce"""
 
-    categories = ("Any","Anime","Application","Books","Games","Movies","Music","TV")
+    categories = ("Any","Anime","Applications","Books","Comics","Games","Movies","Music","Software","TV")
 
     categories_Keywords = { "Anime" : ["anime"],
-                        "Application" : ["app","software"],
-                        "Books" : ["book","comic"],
+                        "Application" : ["app"],
+                        "Books" : ["book"],
                         "Games" : ["game"],
                         "Movies" : ["movie",],
-                        "Music" : ["music","audio"],
-                        "TV" : ["tv","show"],
-                        "Adult" : ["xxx","porn"],
-                        "Any" : [""]
+                        "Music" : ["music"],
+                        "TV" : ["tv"],
+                        "Adult" : ["-xxx","-porn"],
+                        "Comics" : ["comics"],
+                        "Any" : [""],
+                        "Software":["software"]
                     }
     @classmethod
     def Feed_Url(cls, query, page=1):
@@ -109,13 +111,3 @@ class TorrentzEngine():
     def Calc_Age(cls, tor_Obj):
         time_Duration = tor_Obj.date.utcnow() - tor_Obj.date
         return time_Duration
-
-    @classmethod
-    def Is_Safe(cls, categ_String):
-        if categ_String:
-            for i in cls.categories_Keywords["Adult"]:
-                if i in categ_String:
-                    return False
-            return True
-        return False
-

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>342</width>
-    <height>208</height>
+    <width>584</width>
+    <height>313</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -45,6 +45,13 @@
         <widget class="QSpinBox" name="spin_min_seeds">
          <property name="maximum">
           <number>100000</number>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_8">
+         <property name="text">
+          <string>(exclude torrents with seeds less than this)</string>
          </property>
         </widget>
        </item>
@@ -97,6 +104,13 @@
        </item>
        <item>
         <widget class="QComboBox" name="combo_age_unit"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_9">
+         <property name="text">
+          <string>(exclude torrents with age more than this)</string>
+         </property>
+        </widget>
        </item>
        <item>
         <spacer name="horizontalSpacer_4">
@@ -152,6 +166,13 @@
         <widget class="QComboBox" name="combo_size_unit"/>
        </item>
        <item>
+        <widget class="QLabel" name="label_10">
+         <property name="text">
+          <string>(exclude torrents with size more than this)</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <spacer name="horizontalSpacer_6">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
@@ -179,6 +200,46 @@
         </widget>
        </item>
       </layout>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_7">
+       <property name="text">
+        <string>    &quot;Mozilla Firefox&quot; - search exactly for &quot;Mozilla Firefox&quot;</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_h"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>    Mozilla | Linux - search for Mozilla or Linux</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_l"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_5">
+       <property name="text">
+        <string>    Mozilla Firefox -beta - search for Mozilla AND Firefox but NOT beta</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_k"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_6">
+       <property name="text">
+        <string>    ^Mozilla - search for titles starting with Mozilla</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_j"/>
      </item>
      <item>
       <spacer name="verticalSpacer">
